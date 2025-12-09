@@ -10,29 +10,29 @@
         rel="stylesheet">
     <style>
         :root {
-            /* Palette */
-            --bg-color: #1e272e;
-            --surface: #2d3436;
-            --primary: #ffd740;
-            --red: #ff5555;
-            --blue: #55aaff;
-            --green: #55ff55;
-            --yellow: #ffaa00;
+            /* Palette: Premium Blue Theme */
+            --bg-gradient-start: #003366;
+            --bg-gradient-end: #001a33;
+            --surface: rgba(0, 0, 0, 0.4);
+
+            --red: #ff4757;
+            --blue-real: #3742fa;
+            --green: #2ecc71;
+            --yellow: #ffa502;
 
             /* Dimensions */
-            --card-w-desktop: 100px;
-            --card-h-desktop: 150px;
-            --card-w-mobile: 70px;
-            --card-h-mobile: 105px;
+            --card-w-desktop: 110px;
+            --card-h-desktop: 160px;
         }
 
         * {
             box-sizing: border-box;
+            touch-action: manipulation;
         }
 
         body {
             margin: 0;
-            background: var(--bg-color);
+            background: radial-gradient(circle at center, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
             color: white;
             font-family: 'Nunito', sans-serif;
             overflow: hidden;
@@ -58,76 +58,70 @@
             opacity: 1;
         }
 
-        /* --- Typography --- */
+        /* --- Components --- */
         h1,
         h2 {
             font-family: 'Fredoka One', cursive;
             margin: 5px 0;
+            text-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
         }
 
-        .text-accent {
-            color: var(--primary);
-            text-shadow: 0 0 10px rgba(255, 215, 64, 0.5);
-        }
-
-        /* --- Components: Inputs & Buttons --- */
         input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.2);
             padding: 15px;
-            border-radius: 12px;
+            border-radius: 15px;
             color: white;
             font-size: 18px;
             text-align: center;
-            width: 250px;
-            margin-bottom: 10px;
+            width: 260px;
+            margin-bottom: 15px;
             outline: none;
             transition: 0.2s;
+            font-weight: bold;
         }
 
         input:focus {
-            border-color: var(--primary);
-            background: rgba(0, 0, 0, 0.2);
+            border-color: var(--yellow);
+            background: rgba(0, 0, 0, 0.4);
         }
 
         button {
-            background: var(--primary);
-            color: #d35400;
+            background: linear-gradient(180deg, #ffa502, #ff7f50);
+            color: white;
             border: none;
-            padding: 15px 30px;
+            padding: 15px 40px;
             border-radius: 50px;
             font-size: 20px;
-            font-weight: 900;
+            font-family: 'Fredoka One', cursive;
             cursor: pointer;
-            box-shadow: 0 6px 0 #d35400;
+            box-shadow: 0 6px 0 #d35400, 0 10px 20px rgba(0, 0, 0, 0.4);
             transform: translateY(0);
             transition: 0.1s;
-            min-width: 150px;
-            margin: 5px;
+            min-width: 160px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         button:active {
             transform: translateY(6px);
-            box-shadow: 0 0 0 transparent;
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            filter: grayscale(1);
+            box-shadow: 0 0 0 #d35400, inset 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         button.btn-secondary {
-            background: #34495e;
-            /* Dark Blue */
-            color: white;
-            box-shadow: 0 6px 0 #2c3e50;
+            background: linear-gradient(180deg, #3742fa, #5352ed);
+            box-shadow: 0 6px 0 #1e3799, 0 10px 20px rgba(0, 0, 0, 0.4);
         }
 
-        /* --- Components: Toast --- */
+        button.btn-secondary:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #1e3799;
+        }
+
+        /* --- Toast --- */
         #toast-container {
             position: fixed;
-            bottom: 100px;
+            bottom: 120px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 3000;
@@ -135,67 +129,64 @@
         }
 
         .toast {
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 12px 24px;
+            border-radius: 30px;
             margin-top: 10px;
-            animation: fadeInOut 2s forwards;
+            animation: fadeInOut 2.5s forwards;
             display: block;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: bold;
         }
 
         @keyframes fadeInOut {
             0% {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(20px);
             }
 
-            15% {
+            10% {
                 opacity: 1;
                 transform: translateY(0);
             }
 
-            85% {
+            90% {
                 opacity: 1;
             }
 
             100% {
                 opacity: 0;
-                transform: translateY(-10px);
+                transform: translateY(-20px);
             }
         }
 
-        /* --- GAME LAYOUT (Grid) --- */
+        /* --- GAME LAYOUT --- */
         #game-layout {
             display: grid;
-            grid-template-rows: 80px 1fr 180px;
-            /* Header, Center, Footer */
+            grid-template-rows: 100px 1fr 200px;
             width: 100%;
             height: 100%;
             position: relative;
         }
 
-        /* Header: Opponents */
+        /* 1. Header: Opponents */
         .top-bar {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
-            /* Centered opponents */
-            padding: 0 20px;
-            background: rgba(0, 0, 0, 0.2);
+            padding-top: 10px;
             gap: 20px;
-            overflow-x: auto;
-            white-space: nowrap;
         }
 
         .opponent {
             display: flex;
             flex-direction: column;
             align-items: center;
-            opacity: 0.7;
+            opacity: 0.6;
             transition: 0.3s;
-            min-width: 70px;
+            position: relative;
         }
 
         .opponent.active-turn {
@@ -204,50 +195,52 @@
         }
 
         .opponent-avatar {
-            width: 40px;
-            height: 40px;
-            background: #bdc3c7;
-            color: #2c3e50;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #bdc3c7, #2c3e50);
+            color: white;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             font-weight: bold;
-            border: 2px solid transparent;
-            position: relative;
+            font-size: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            text-shadow: 1px 1px 2px black;
         }
 
+        /* Active Glow */
         .opponent.active-turn .opponent-avatar {
-            background: var(--primary);
-            border-color: white;
-            box-shadow: 0 0 15px var(--primary);
+            border-color: #ffd740;
+            box-shadow: 0 0 20px #ffd740;
         }
 
         .opponent-card-count {
             position: absolute;
-            bottom: -5px;
+            top: -5px;
             right: -5px;
-            background: #ff5555;
+            background: #ff4757;
             color: white;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            border: 1px solid white;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 12px;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .opponent-name {
-            font-size: 12px;
+            font-size: 14px;
             margin-top: 5px;
-            max-width: 80px;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            text-shadow: 0 2px 4px black;
+            font-weight: 700;
         }
 
-        /* Status Indicator Overlay */
+        /* 2. Status Overlay */
         .status-overlay {
             position: absolute;
-            top: 100px;
-            /* Below top bar */
+            top: 25%;
             width: 100%;
             text-align: center;
             pointer-events: none;
@@ -256,41 +249,39 @@
 
         #statusText {
             font-family: 'Fredoka One';
-            font-size: 28px;
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            font-size: 40px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+            letter-spacing: 2px;
         }
 
-        /* Center Board */
+        /* 3. Center Board */
         .center-board {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 40px;
+            gap: 30px;
             position: relative;
+            z-index: 10;
         }
 
-        /* Card Piles */
-        .pile-area {
+        .pile-wrapper {
+            position: relative;
             width: var(--card-w-desktop);
             height: var(--card-h-desktop);
-            position: relative;
         }
 
         /* Draw Pile */
         .draw-pile {
             width: 100%;
             height: 100%;
-            background: #2c3e50;
-            border: 3px solid #ecf0f1;
-            border-radius: 10px;
+            background: #2f3542;
+            border-radius: 15px;
+            border: 4px solid #f1f2f6;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-            color: #7f8c8d;
             transition: transform 0.1s;
         }
 
@@ -298,468 +289,460 @@
             transform: scale(0.95);
         }
 
-        .draw-pile::after {
-            content: "UNO";
-            opacity: 0.2;
-            transform: rotate(-30deg);
+        /* Uno Logo on Deck */
+        .uno-logo-text {
             font-family: 'Fredoka One';
             font-size: 30px;
+            color: rgba(255, 255, 255, 0.15);
+            transform: rotate(-25deg);
         }
 
         /* Discard Pile */
         .discard-pile {
             width: 100%;
             height: 100%;
-            position: relative;
+            transform: rotate(5deg);
         }
 
-        /* Active Color Dot */
-        .color-dot {
+        /* Active Color Indicator */
+        .active-color-badge {
             position: absolute;
-            top: -15px;
-            right: -15px;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 3px solid white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-            z-index: 20;
-            background: transparent;
-            transition: background 0.3s;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px 15px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            border: 2px solid white;
+            display: none;
+            /* JS toggles */
+            white-space: nowrap;
         }
 
-        /* Footer: Hand */
+        /* 4. Action Buttons (Right Side) */
+        .action-area {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 50;
+        }
+
+        /* ROUND BUTTONS - STRICT STATES */
+        .btn-round {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            cursor: pointer;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+            /* INACTIVE STATE (Default) */
+            background: #57606f;
+            opacity: 0.5;
+            filter: grayscale(100%);
+            transform: scale(0.8);
+            pointer-events: none;
+            box-shadow: none;
+        }
+
+        /* ACTION NEEDED */
+        .btn-round.btn-action-needed {
+            /* ACTIVE STATE */
+            opacity: 1;
+            filter: grayscale(0%);
+            transform: scale(1.1);
+            pointer-events: auto;
+            border-color: white;
+            animation: pulse-btn 1.5s infinite;
+        }
+
+        #btnUno.btn-action-needed {
+            background: linear-gradient(135deg, #ff9f43, #ee5253);
+            box-shadow: 0 0 20px #ff9f43;
+        }
+
+        #btnCatch.btn-action-needed {
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+            box-shadow: 0 0 20px #ff4757;
+        }
+
+        @keyframes pulse-btn {
+            0% {
+                transform: scale(1.1);
+            }
+
+            50% {
+                transform: scale(1.15);
+                box-shadow: 0 0 30px white;
+            }
+
+            100% {
+                transform: scale(1.1);
+            }
+        }
+
+
+        /* 5. Footer: Hand */
         .bottom-bar {
             display: flex;
             align-items: flex-end;
+            justify-content: center;
+            /* Generally center cards */
             padding-bottom: 20px;
-            overflow-x: auto;
-            /* Scrollable */
-            padding-left: 50%;
-            /* Center start */
-            margin-left: -50%;
-            /* Hackish centering fix or JS shift? Used Flex justify if fits */
-            justify-content: flex-start;
-            /* Default scroll */
-            padding: 10px 20px 20px 20px;
-            gap: 5px;
-            /* Minimal gap */
+            height: 100%;
+            width: 100%;
         }
 
-        /* Hand Container Wrapper to fix scroll centering issues */
-        .hand-wrapper {
-            display: flex;
+        .hand-scroll-wrapper {
             width: 100%;
-            height: 100%;
             overflow-x: auto;
+            display: flex;
             justify-content: center;
-            /* Center if few cards, start if many */
+            padding: 10px;
+            scrollbar-width: none;
+        }
+
+        .hand-scroll-wrapper::-webkit-scrollbar {
+            display: none;
         }
 
         .hand-inner {
             display: flex;
             align-items: flex-end;
-            gap: 10px;
-            /* CLEAN SPACING - Positive value */
-            padding: 0 40px;
-            /* Side padding */
+            gap: 12px;
+            /* Nice tangential gap */
+            padding: 0 30px;
         }
 
-        /* Hide scrollbar */
-        .hand-wrapper::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .hand-wrapper::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 3px;
-        }
-
-        /* --- CARD DESIGN (CSS ONLY) --- */
+        /* --- CARD STYLING --- */
         .card {
             width: var(--card-w-desktop);
             height: var(--card-h-desktop);
             background: white;
-            border-radius: 10px;
-            box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
             position: relative;
             cursor: pointer;
+            box-shadow: -2px 4px 10px rgba(0, 0, 0, 0.5);
             flex-shrink: 0;
-            transition: transform 0.2s, z-index 0s;
             user-select: none;
-            overflow: hidden;
+            transition: transform 0.2s;
+            border: 5px solid white;
+            /* Crisp white border like reference */
         }
 
         .card:hover {
-            transform: translateY(-30px);
+            transform: translateY(-30px) scale(1.05);
             z-index: 100;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
         }
 
-        /* Card Colors */
+        .card:active {
+            transform: translateY(-20px) scale(1.0);
+        }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
         .bg-red {
             background: var(--red);
-            color: var(--red);
         }
 
         .bg-blue {
-            background: var(--blue);
-            color: var(--blue);
+            background: var(--blue-real);
         }
 
         .bg-green {
             background: var(--green);
-            color: var(--green);
         }
 
         .bg-yellow {
             background: var(--yellow);
-            color: var(--yellow);
         }
 
         .bg-black {
             background: #2d3436;
-            color: white;
-            background: radial-gradient(circle, #444 20%, #000 100%);
+            background: radial-gradient(circle, #555 10%, #000 90%);
         }
 
-        /* Special Wild Gradient Border/Effect */
-        .bg-black .inner-oval {
-            border: 2px solid white;
-        }
-
-        .inner-oval {
-            position: absolute;
-            top: 10%;
-            bottom: 10%;
-            left: 10%;
-            right: 10%;
+        /* Center White Oval */
+        .card-oval {
+            width: 80%;
+            height: 75%;
             background: white;
             border-radius: 50%;
-            transform: rotate(-30deg);
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+            transform: rotate(-25deg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 1px 2px 5px rgba(0, 0, 0, 0.2);
         }
 
-        .bg-black .inner-oval {
-            background: white;
-            /* Or rainbow? Keep simple */
-        }
-
-        .card-symbol {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 40px;
+        .card-val-big {
             font-family: 'Fredoka One';
-            z-index: 2;
-            color: inherit;
-            /* Takes from parent usually, but text inside oval needs specific */
-            text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
+            font-size: 50px;
+            line-height: 1;
+            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
         }
 
-        /* Fix text color inside the white oval */
-        .bg-red .card-symbol {
+        .bg-red .card-val-big {
             color: var(--red);
         }
 
-        .bg-blue .card-symbol {
-            color: var(--blue);
+        .bg-blue .card-val-big {
+            color: var(--blue-real);
         }
 
-        .bg-green .card-symbol {
+        .bg-green .card-val-big {
             color: var(--green);
         }
 
-        .bg-yellow .card-symbol {
+        .bg-yellow .card-val-big {
             color: var(--yellow);
         }
 
-        .bg-black .card-symbol {
-            background: linear-gradient(45deg, var(--red), var(--blue), var(--green), var(--yellow));
+        .bg-black .card-val-big {
+            background: linear-gradient(to right, var(--red), var(--blue-real), var(--green), var(--yellow));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-size: 50px;
         }
 
-        .corner-idx {
+        .corner-val {
             position: absolute;
-            font-size: 16px;
-            font-weight: bold;
             color: white;
+            font-family: 'Fredoka One';
+            font-size: 18px;
             padding: 4px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
         }
 
-        .corner-tl {
-            top: 2px;
-            left: 4px;
+        .c-tl {
+            top: 0;
+            left: 2px;
         }
 
-        .corner-br {
-            bottom: 2px;
-            right: 4px;
+        .c-br {
+            bottom: 0;
+            right: 2px;
             transform: rotate(180deg);
         }
 
-        /* --- Action Buttons (UNO / Catch) --- */
-        .action-area {
-            position: absolute;
-            right: 20px;
-            bottom: 220px;
-            /* Above hand */
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            z-index: 50;
-        }
-
-        .btn-round {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            padding: 0;
-            min-width: 0;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0.4;
-            pointer-events: none;
-            transition: 0.3s;
-        }
-
-        .btn-active {
-            opacity: 1;
-            pointer-events: all;
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-        }
-
-        /* --- MOBILE --- */
+        /* --- MOBILE ADJUSTMENTS --- */
         @media (max-width: 600px) {
             :root {
-                --card-w-desktop: 70px;
-                --card-h-desktop: 100px;
+                --card-w-desktop: 80px;
+                --card-h-desktop: 115px;
             }
 
-            .center-board {
-                gap: 15px;
-            }
-
-            .action-area {
-                bottom: 160px;
-                right: 10px;
-            }
-
-            .btn-round {
-                width: 50px;
-                height: 50px;
-                font-size: 12px;
-            }
-
-            h1 {
-                font-size: 24px;
+            #game-layout {
+                grid-template-rows: 80px 1fr 160px;
             }
 
             #statusText {
-                font-size: 18px;
+                font-size: 24px;
+                top: 20%;
             }
 
-            .hand-inner {
-                gap: 5px;
+            .action-area {
+                flex-direction: row;
+                top: auto;
+                bottom: 180px;
+                right: 50%;
+                transform: translateX(50%);
+                width: 100%;
+                justify-content: center;
+                gap: 40px;
+            }
+
+            .btn-round {
+                width: 60px;
+                height: 60px;
+                font-size: 14px;
+            }
+
+            .opponent-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
             }
 
             .card:hover {
                 transform: translateY(-15px);
             }
-        }
 
-        /* --- Modals --- */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            animation: fadeModal 0.2s;
-        }
-
-        @keyframes fadeModal {
-            from {
-                opacity: 0;
+            /* Force left align scrolling on mobile if overflowing */
+            .hand-scroll-wrapper {
+                justify-content: flex-start;
             }
 
-            to {
-                opacity: 1;
+            .hand-inner {
+                padding: 0 20px;
             }
         }
 
-        .modal-box {
-            background: var(--surface);
-            padding: 30px;
+        /* --- MENUS (LOBBY) --- */
+        .color-highlight {
+            color: var(--yellow);
+            text-shadow: 0 0 10px var(--yellow);
+        }
+
+        .screen-content {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 40px;
             border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             text-align: center;
-            max-width: 90%;
-            border: 2px solid white;
-        }
-
-        .color-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .color-choice {
-            width: 80px;
-            height: 80px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.1s;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .color-choice:active {
-            transform: scale(0.9);
         }
     </style>
 </head>
 
 <body>
-
     <div id="toast-container"></div>
 
-    <!-- Screen: Login -->
+    <!-- LOGIN -->
     <div id="screen-login" class="screen active-screen">
-        <h1 class="text-accent" style="font-size: 60px;">UNO</h1>
-        <p style="margin-bottom: 30px; font-weight: bold;">ONLINE MULTIPLAYER</p>
-
-        <input type="text" id="username" placeholder="Nickname" maxlength="12">
-        <button onclick="createGame()">Create Room</button>
-
-        <div style="margin-top:20px; display: flex; gap: 10px; align-items: center;">
-            <input type="text" id="roomCode" placeholder="Enter Code"
-                style="width: 140px; margin:0; text-transform:uppercase;">
-            <button class="btn-secondary" style="margin:0; min-width:auto;" onclick="joinGame()">Join</button>
+        <div class="screen-content">
+            <h1 class="color-highlight" style="font-size:50px;">UNO</h1>
+            <p style="opacity:0.8; margin-bottom:20px;">ONLINE EDITION</p>
+            <input type="text" id="username" placeholder="Nickname">
+            <br>
+            <button onclick="createGame()">Create Game</button>
+            <div style="margin: 15px 0; opacity:0.5;">- OR -</div>
+            <input type="text" id="roomCode" placeholder="Room Code" style="text-transform:uppercase;">
+            <br>
+            <button class="btn-secondary" onclick="joinGame()">Join Game</button>
         </div>
     </div>
 
-    <!-- Screen: Lobby -->
+    <!-- LOBBY -->
     <div id="screen-lobby" class="screen">
-        <h2>Lobby</h2>
-        <div style="background: rgba(255,255,255,0.1); padding: 15px 30px; border-radius: 15px; text-align: center; margin: 20px; cursor: pointer;"
-            onclick="copyCode()" title="Click to Copy">
-            <small>ROOM CODE</small>
-            <div id="lobbyCodeDisplay" class="text-accent" style="font-size: 32px; letter-spacing: 3px;">Loading...
+        <div class="screen-content" style="min-width: 320px;">
+            <h2>Lobby</h2>
+            <div style="margin: 20px 0; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; cursor: pointer;"
+                onclick="copyCode()">
+                <div style="font-size:12px; opacity:0.6;">ROOM CODE</div>
+                <div id="lobbyCodeDisplay" class="color-highlight"
+                    style="font-size:36px; letter-spacing:4px; font-weight:bold;">---</div>
+                <div style="font-size:10px; opacity:0.4;">Tap to Copy</div>
             </div>
-        </div>
 
-        <div id="lobbyList"
-            style="display: flex; flex-direction: column; gap: 10px; width: 300px; margin-bottom: 20px;">
-            <!-- Player List -->
-        </div>
+            <div id="lobbyList" style="text-align:left; margin-bottom:20px;"></div>
 
-        <div id="hostArea" style="display: none;">
-            <button onclick="startGame()">START GAME</button>
+            <div id="hostArea" style="display:none;">
+                <button onclick="startGame()">START GAME</button>
+            </div>
+            <p id="waitText" style="opacity:0.6">Waiting for host to start...</p>
         </div>
-        <p id="waitText">Waiting for host...</p>
     </div>
 
-    <!-- Screen: Game -->
+    <!-- GAME -->
     <div id="screen-game" class="screen">
         <div id="game-layout">
 
-            <!-- Headers -->
-            <div class="top-bar" id="opponentsBar">
-                <!-- Opponent Avatars -->
-            </div>
+            <!-- TOP: Opponents -->
+            <div class="top-bar" id="opponentsBar"></div>
 
-            <!-- Status Msg -->
+            <!-- OVERLAY: Status -->
             <div class="status-overlay">
-                <div id="statusText">Connecting...</div>
-                <!-- Copy Room Code Helper in Game -->
-                <div style="font-size: 12px; opacity: 0.5; margin-top: 5px; cursor: pointer;" onclick="copyCode()">Room:
-                    <span id="gameCodeDisplay"></span> ❐</div>
+                <div id="statusText"></div>
+                <div id="activeColorBadge" class="active-color-badge">Color: RED</div>
             </div>
 
-            <!-- Center -->
+            <!-- CENTER: Board -->
             <div class="center-board">
-                <div class="pile-area">
-                    <div class="draw-pile" onclick="drawCard()"></div>
-                </div>
-                <div class="pile-area">
-                    <div class="discard-pile" id="discardPile"></div>
-                    <div class="color-dot" id="activeColorDot"></div>
-                </div>
-            </div>
-
-            <!-- Actions -->
-            <div class="action-area">
-                <button id="btnUno" class="btn-round"
-                    style="background: linear-gradient(135deg, #000, #444); border: 2px solid #ed8936; color: #ed8936;"
-                    onclick="sayUno()">UNO</button>
-                <button id="btnCatch" class="btn-round" style="background: #e74c3c; color: white;"
-                    onclick="catchUno()">CATCH</button>
-            </div>
-
-            <!-- Hand -->
-            <div class="bottom-bar">
-                <div class="hand-wrapper">
-                    <div class="hand-inner" id="myHand">
-                        <!-- My Cards -->
+                <div class="pile-wrapper" onclick="drawCard()">
+                    <div class="draw-pile">
+                        <div class="uno-logo-text">UNO</div>
                     </div>
                 </div>
+                <div class="pile-wrapper">
+                    <div class="discard-pile" id="discardPile"></div>
+                </div>
             </div>
 
-        </div>
-    </div>
+            <!-- RIGHT/BOTTOM: Actions -->
+            <div class="action-area">
+                <div id="btnUno" class="btn-round" onclick="sayUno()">UNO!</div>
+                <div id="btnCatch" class="btn-round" onclick="catchUno()">CATCH</div>
+            </div>
 
-    <!-- Modals -->
-    <div id="colorModal" class="modal">
-        <div class="modal-box">
-            <h3>Choose Color</h3>
-            <div class="color-grid">
-                <div class="color-choice" style="background: var(--red);" onclick="pickColor('red')"></div>
-                <div class="color-choice" style="background: var(--blue);" onclick="pickColor('blue')"></div>
-                <div class="color-choice" style="background: var(--green);" onclick="pickColor('green')"></div>
-                <div class="color-choice" style="background: var(--yellow);" onclick="pickColor('yellow')"></div>
+            <!-- BOTTOM: Hand -->
+            <div class="bottom-bar">
+                <div class="hand-scroll-wrapper">
+                    <div class="hand-inner" id="myHand"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="wildDraw4Modal" class="modal">
-        <div class="modal-box">
-            <h3 style="color: var(--red);">Wild Draw 4 Attack!</h3>
-            <p id="challengeMsg">Opponent played +4.</p>
-            <p style="font-size: 14px; margin-bottom: 20px;">Challenge them if you think they have the matching color!
-            </p>
-            <button onclick="respondChallenge(true)" style="background: #e74c3c;">Challenge</button>
-            <button class="btn-secondary" onclick="respondChallenge(false)">Accept (+4)</button>
+    <!-- MODAL: Color Picker -->
+    <div id="modalColor" class="screen" style="position:fixed; background:rgba(0,0,0,0.85); z-index:2000;">
+        <h2 style="margin-bottom:30px;">Choose a Color</h2>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+            <div onclick="doPickColor('red')"
+                style="width:100px; height:100px; background:var(--red); border-radius:15px; cursor:pointer; border:4px solid white;">
+            </div>
+            <div onclick="doPickColor('blue')"
+                style="width:100px; height:100px; background:var(--blue-real); border-radius:15px; cursor:pointer; border:4px solid white;">
+            </div>
+            <div onclick="doPickColor('green')"
+                style="width:100px; height:100px; background:var(--green); border-radius:15px; cursor:pointer; border:4px solid white;">
+            </div>
+            <div onclick="doPickColor('yellow')"
+                style="width:100px; height:100px; background:var(--yellow); border-radius:15px; cursor:pointer; border:4px solid white;">
+            </div>
         </div>
     </div>
 
-    <div id="drawDecisionModal" class="modal">
-        <div class="modal-box">
-            <h3>Playable Card Drawn!</h3>
-            <div id="drawPreview" style="display: flex; justify-content: center; margin: 20px;"></div>
-            <button onclick="finalizeDraw(true)">Play It</button>
-            <button class="btn-secondary" onclick="finalizeDraw(false)">Keep It</button>
+    <!-- MODAL: Challenge -->
+    <div id="modalChallenge" class="screen" style="position:fixed; background:rgba(0,0,0,0.9); z-index:2000;">
+        <h1 style="color:var(--red); font-size:40px;">WILD +4!</h1>
+        <p>You have been attacked.</p>
+        <p style="opacity:0.7; font-size:14px; max-width:300px; text-align:center; margin-bottom:30px;">
+            If the attacker has the matching color in their hand, you can WIN a challenge (they draw 4).
+            If you lose, you draw 6.
+        </p>
+        <div style="display:flex; gap:20px;">
+            <button onclick="doChallenge(true)" style="background:var(--red);">CHALLENGE</button>
+            <button class="btn-secondary" onclick="doChallenge(false)">ACCEPT (+4)</button>
         </div>
     </div>
 
-    <div id="victoryModal" class="modal">
-        <div class="modal-box">
-            <h1 class="text-accent" style="font-size: 50px;">VICTORY!</h1>
-            <h2 id="winnerText">Name wins!</h2>
-            <br>
-            <button onclick="location.reload()">Return to Menu</button>
+    <!-- MODAL: Draw Choice -->
+    <div id="modalDraw" class="screen" style="position:fixed; background:rgba(0,0,0,0.85); z-index:2000;">
+        <h2>Playable Card!</h2>
+        <div id="drawReviewContainer" style="margin:30px; pointer-events:none;"></div>
+        <div style="display:flex; gap:20px;">
+            <button onclick="doDrawAction(true)">PLAY</button>
+            <button class="btn-secondary" onclick="doDrawAction(false)">KEEP</button>
         </div>
+    </div>
+
+    <!-- MODAL: Victory -->
+    <div id="modalVictory" class="screen" style="position:fixed; background:rgba(0,0,0,0.95); z-index:3000;">
+        <h1 style="font-size:60px; color:var(--yellow);">VICTORY!</h1>
+        <h2 id="winnerText"></h2>
+        <br><br>
+        <button onclick="location.reload()">PLAY AGAIN</button>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
@@ -767,273 +750,264 @@
         const socket = io();
         let myId = null;
         let myHand = [];
-        let currentRoomCode = "";
+        let roomCodeVal = "";
 
-        // --- Navigation ---
+        // UI Helpers
         function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+            document.querySelectorAll('.screen').forEach(s => {
+                if (!s.id.startsWith('modal')) s.classList.remove('active-screen');
+            });
+            if (!id.startsWith('modal')) hideModals();
             document.getElementById(id).classList.add('active-screen');
         }
-
+        function hideModals() {
+            document.getElementById('modalColor').classList.remove('active-screen');
+            document.getElementById('modalChallenge').classList.remove('active-screen');
+            document.getElementById('modalDraw').classList.remove('active-screen');
+            document.getElementById('modalVictory').classList.remove('active-screen');
+        }
         function toast(msg) {
             const c = document.getElementById('toast-container');
-            const d = document.createElement('div');
-            d.className = 'toast';
-            d.innerText = msg;
-            c.appendChild(d);
-            setTimeout(() => d.remove(), 2100);
+            const t = document.createElement('div');
+            t.className = 'toast'; t.innerText = msg;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 2500);
         }
-
         function copyCode() {
-            navigator.clipboard.writeText(currentRoomCode).then(() => toast("Code Copied!")).catch(() => toast("Error Copying"));
+            navigator.clipboard.writeText(roomCodeVal).then(() => toast("Code Copied!"));
         }
 
-        // --- Socket Events ---
+        // Logic
         socket.on('connect', () => myId = socket.id);
 
-        socket.on('gameCreated', (data) => {
-            currentRoomCode = data.roomCode;
-            document.getElementById('lobbyCodeDisplay').innerText = data.roomCode;
+        socket.on('gameCreated', d => {
+            roomCodeVal = d.roomCode;
+            document.getElementById('lobbyCodeDisplay').innerText = d.roomCode;
             document.getElementById('hostArea').style.display = 'block';
             document.getElementById('waitText').style.display = 'none';
             showScreen('screen-lobby');
         });
 
-        socket.on('joinedGame', (data) => {
-            currentRoomCode = data.roomCode;
-            document.getElementById('lobbyCodeDisplay').innerText = data.roomCode;
+        socket.on('joinedGame', d => {
+            roomCodeVal = d.roomCode;
+            document.getElementById('lobbyCodeDisplay').innerText = d.roomCode;
             document.getElementById('hostArea').style.display = 'none';
             document.getElementById('waitText').style.display = 'block';
             showScreen('screen-lobby');
         });
 
-        socket.on('playerList', (list) => {
-            const div = document.getElementById('lobbyList');
-            div.innerHTML = list.map(p => `
-                <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; display: flex; justify-content: space-between;">
-                    <span>${p.name}</span>
-                    ${p.id === myId ? '<span style="opacity:0.5">(You)</span>' : ''}
-                </div>
-            `).join('');
+        socket.on('playerList', list => {
+            const c = document.getElementById('lobbyList');
+            c.innerHTML = list.map(p => `<div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.1);">${p.name}</div>`).join('');
         });
 
-        socket.on('gameStarted', (state) => {
-            document.getElementById('gameCodeDisplay').innerText = currentRoomCode;
+        socket.on('gameStarted', state => {
             showScreen('screen-game');
             updateBoard(state);
         });
-
         socket.on('gameState', updateBoard);
-        socket.on('handUpdate', (hand) => {
-            myHand = hand;
+
+        socket.on('handUpdate', h => {
+            myHand = h;
             renderHand();
-            checkButtons();
+            checkUnoButton();
         });
 
-        // --- Modals ---
-        let pendingCardIdx = null; // For Wild color pick
-        let isDrawAction = false; // Distinguish play vs draw-play choice
+        socket.on('actionLog', d => toast(d.msg));
+        socket.on('errorMsg', m => alert(m));
 
-        socket.on('challengePrompt', (d) => {
-            document.getElementById('challengeMsg').innerText = `${d.attackerName} played +4 on you.`;
-            document.getElementById('wildDraw4Modal').style.display = 'flex';
+        socket.on('challengePrompt', d => {
+            showScreen('modalChallenge');
         });
 
-        socket.on('drawChoice', (d) => {
-            const preview = document.getElementById('drawPreview');
-            preview.innerHTML = '';
-            preview.appendChild(createCardEl(d.card));
-            document.getElementById('drawDecisionModal').style.display = 'flex';
+        socket.on('drawChoice', d => {
+            const c = document.getElementById('drawReviewContainer');
+            c.innerHTML = '';
+            c.appendChild(createCard(d.card));
+            showScreen('modalDraw');
         });
 
-        socket.on('gameOver', (d) => {
+        socket.on('gameOver', d => {
             document.getElementById('winnerText').innerText = d.winner;
-            document.getElementById('victoryModal').style.display = 'flex';
+            showScreen('modalVictory');
         });
 
-        socket.on('actionLog', (d) => toast(d.msg));
-        socket.on('errorMsg', (msg) => alert(msg));
-
-
-        // --- Actions ---
+        // --- Interaction ---
         function createGame() {
-            const n = document.getElementById('username').value.trim();
-            if (!n) return alert("Nickname required");
-            socket.emit('createGame', { paramName: n });
+            const n = document.getElementById('username').value;
+            if (n) socket.emit('createGame', { paramName: n });
+            else alert("Enter Name");
         }
         function joinGame() {
-            const n = document.getElementById('username').value.trim();
-            const c = document.getElementById('roomCode').value.trim();
-            if (!n || !c) return alert("Nickname and Code required");
-            socket.emit('joinGame', { paramName: n, roomCode: c });
+            const n = document.getElementById('username').value;
+            const c = document.getElementById('roomCode').value;
+            if (n && c) socket.emit('joinGame', { paramName: n, roomCode: c });
+            else alert("Enter details");
         }
         function startGame() { socket.emit('startGame'); }
+
         function drawCard() { socket.emit('drawCard'); }
         function sayUno() {
             socket.emit('sayUno');
-            document.getElementById('btnUno').classList.remove('btn-active');
+            document.getElementById('btnUno').classList.remove('btn-action-needed');
         }
         function catchUno() { socket.emit('catchUno'); }
 
-        function playCardAttempt(idx) {
-            const card = myHand[idx];
-            if (card.color === 'black') {
-                pendingCardIdx = idx;
-                isDrawAction = false;
-                document.getElementById('colorModal').style.display = 'flex';
+        // Card Play
+        let tempCardIdx = null;
+        let isDrawPlay = false;
+
+        function clickCard(idx) {
+            const c = myHand[idx];
+            if (c.color === 'black') {
+                tempCardIdx = idx;
+                isDrawPlay = false;
+                showScreen('modalColor');
             } else {
                 socket.emit('playCard', { cardIndex: idx });
             }
         }
 
-        function pickColor(c) {
-            document.getElementById('colorModal').style.display = 'none';
-            if (isDrawAction) {
-                // Was form draw choice
-                socket.emit('finishDrawTurn', { play: true, chosenColor: c });
-                document.getElementById('drawDecisionModal').style.display = 'none';
-            } else {
-                if (pendingCardIdx !== null) {
-                    socket.emit('playCard', { cardIndex: pendingCardIdx, chosenColor: c });
-                }
+        function doPickColor(col) {
+            hideModals();
+            if (isDrawPlay) {
+                socket.emit('finishDrawTurn', { play: true, chosenColor: col });
+            } else if (tempCardIdx !== null) {
+                socket.emit('playCard', { cardIndex: tempCardIdx, chosenColor: col });
             }
         }
 
-        function finalizeDraw(play) {
+        function doDrawAction(play) {
+            hideModals();
             if (play) {
-                // Check if wild
-                const previewCard = document.getElementById('drawPreview').firstElementChild;
-                // Hacky check or just robust: logic
-                // If the modal is showing a black card
-                if (previewCard && previewCard.className.includes('bg-black')) {
-                    isDrawAction = true;
-                    document.getElementById('colorModal').style.display = 'flex';
-                    return; // Wait for color
+                const el = document.getElementById('drawReviewContainer').firstElementChild;
+                if (el && el.innerHTML.includes('bg-black')) {
+                    isDrawPlay = true;
+                    showScreen('modalColor');
+                    return;
                 }
                 socket.emit('finishDrawTurn', { play: true });
             } else {
                 socket.emit('finishDrawTurn', { play: false });
             }
-            document.getElementById('drawDecisionModal').style.display = 'none';
         }
 
-        function respondChallenge(doCh) {
-            socket.emit('respondChallenge', { challenge: doCh });
-            document.getElementById('wildDraw4Modal').style.display = 'none';
+        function doChallenge(doC) {
+            hideModals();
+            socket.emit('respondChallenge', { challenge: doC });
         }
 
 
-        // --- Rendering ---
+        // --- Render ---
         function updateBoard(state) {
-            if (!state.roomCode) return; // Empty state
+            if (!state.roomCode) return;
 
-            // 1. Status Text
-            const isMyTurn = state.currentPlayer === myId;
-            const turnPlayer = state.players.find(p => p.id === state.currentPlayer);
-            const statusEl = document.getElementById('statusText');
-
-            if (isMyTurn) {
-                statusEl.innerText = "YOUR TURN";
-                statusEl.style.color = "#55ff55";
+            // 1. Status
+            const isMe = state.currentPlayer === myId;
+            const turnP = state.players.find(p => p.id === state.currentPlayer);
+            const statusD = document.getElementById('statusText');
+            if (isMe) {
+                statusD.innerText = "YOUR TURN";
+                statusD.style.color = "#2ecc71";
             } else {
-                statusEl.innerText = `${turnPlayer ? turnPlayer.name : 'Opponent'}'s Turn`;
-                statusEl.style.color = "white";
+                statusD.innerText = (turnP ? turnP.name : 'Opponent') + "'s Turn";
+                statusD.style.color = "white";
             }
 
-            // 2. Opponents Bar
-            const oppBar = document.getElementById('opponentsBar');
-            oppBar.innerHTML = '';
+            // 2. Opponents
+            const topBar = document.getElementById('opponentsBar');
+            topBar.innerHTML = '';
             state.players.forEach(p => {
                 if (p.id === myId) return;
+                const d = document.createElement('div');
+                d.className = `opponent ${p.isTurn ? 'active-turn' : ''}`;
 
-                const initials = p.name.substring(0, 2).toUpperCase();
-                const div = document.createElement('div');
-                div.className = `opponent ${p.isTurn ? 'active-turn' : ''}`;
-                div.innerHTML = `
-                    <div class="opponent-avatar">
-                        ${initials}
-                        <div class="opponent-card-count">${p.cardCount}</div>
-                    </div>
-                    <div class="opponent-name">${p.name}</div>
-                    ${p.saidUno ? '<span style="font-size:10px; color:gold;">UNO!</span>' : ''}
+                let icon = p.name.substring(0, 2).toUpperCase();
+                d.innerHTML = `
+                   <div class="opponent-avatar">${icon}</div>
+                   <div class="opponent-card-count">${p.cardCount}</div>
+                   ${p.saidUno ? '<div style="color:yellow; font-weight:bold; font-size:10px; margin-top:2px;">UNO!</div>' : ''}
+                   <div class="opponent-name">${p.name}</div>
                 `;
-                oppBar.appendChild(div);
+                topBar.appendChild(d);
             });
 
-            // 3. Discard Pile
-            const discEl = document.getElementById('discardPile');
-            discEl.innerHTML = '';
+            // 3. Discard
+            const dis = document.getElementById('discardPile');
+            dis.innerHTML = '';
             if (state.topCard) {
-                // We need to show the visual color if it's black active
-                let visualCard = { ...state.topCard }; // copy
-                let isBlack = visualCard.color === 'black'; // True for fresh Wilds
-
-                // If it is black on the pile, we often want to visually indicate it.
-                // But the 'activeColorDot' handles the state.
-                // Let's just render the card.
-                discEl.appendChild(createCardEl(visualCard, false));
+                const c = createCard(state.topCard);
+                dis.appendChild(c);
             }
 
-            // 4. Dot
-            const dot = document.getElementById('activeColorDot');
+            // 4. Color Indicator
+            const badge = document.getElementById('activeColorBadge');
             if (state.activeColor) {
-                dot.style.background = `var(--${state.activeColor})`;
-                dot.style.display = 'block';
+                badge.style.display = 'block';
+                badge.innerText = "Color: " + state.activeColor.toUpperCase();
+                let hex = { red: '#ff4757', blue: '#3742fa', green: '#2ecc71', yellow: '#ffa502' }[state.activeColor];
+                badge.style.backgroundColor = hex;
             } else {
-                dot.style.display = 'none';
+                badge.style.display = 'none';
             }
 
-            // 5. Catch Logic
+            // 5. Catch Button
             let canCatch = false;
             state.players.forEach(p => {
                 if (p.id !== myId && p.cardCount === 1 && !p.saidUno) canCatch = true;
             });
-            const btnCatch = document.getElementById('btnCatch');
-            if (canCatch) btnCatch.classList.add('btn-active');
-            else btnCatch.classList.remove('btn-active');
+            updateButtonState('btnCatch', canCatch);
         }
 
         function renderHand() {
-            const h = document.getElementById('myHand');
-            h.innerHTML = '';
-            myHand.forEach((c, i) => {
-                const el = createCardEl(c);
-                el.onclick = () => playCardAttempt(i);
-                h.appendChild(el);
+            const c = document.getElementById('myHand');
+            c.innerHTML = '';
+            myHand.forEach((card, i) => {
+                const el = createCard(card);
+                el.onclick = () => clickCard(i);
+                c.appendChild(el);
             });
         }
 
-        function checkButtons() {
-            const btn = document.getElementById('btnUno');
-            if (myHand.length > 0 && myHand.length <= 2) btn.classList.add('btn-active');
-            else btn.classList.remove('btn-active');
+        function checkUnoButton() {
+            let active = myHand.length > 0 && myHand.length <= 2;
+            updateButtonState('btnUno', active);
         }
 
-        // Helper to create Card Element
-        function createCardEl(cardObj, interactive = true) {
-            const el = document.createElement('div');
-            // Safely handle colors
-            let colorClass = 'bg-black';
-            if (['red', 'blue', 'green', 'yellow'].includes(cardObj.color)) colorClass = `bg-${cardObj.color}`;
+        function updateButtonState(id, isActive) {
+            const el = document.getElementById(id);
+            if (isActive) el.classList.add('btn-action-needed');
+            else el.classList.remove('btn-action-needed');
+        }
 
-            el.className = `card ${colorClass}`;
+        function createCard(data) {
+            const d = document.createElement('div');
+            // define background
+            let bgClass = 'bg-black';
+            if (data.color === 'red') bgClass = 'bg-red';
+            if (data.color === 'blue') bgClass = 'bg-blue';
+            if (data.color === 'green') bgClass = 'bg-green';
+            if (data.color === 'yellow') bgClass = 'bg-yellow';
 
-            // Format Value
-            let displayVal = cardObj.value;
-            if (displayVal === 'skip') displayVal = '⊘';
-            if (displayVal === 'reverse') displayVal = '⇄';
-            if (displayVal === 'draw2') displayVal = '+2';
-            if (displayVal === 'wild') displayVal = 'W';
-            if (displayVal === 'wild_draw4') displayVal = '+4';
+            // define symbol
+            let sym = data.value;
+            if (sym === 'skip') sym = '⊘';
+            if (sym === 'reverse') sym = '⇄';
+            if (sym === 'draw2') sym = '+2';
+            if (sym === 'wild') sym = 'W';
+            if (sym === 'wild_draw4') sym = '+4';
 
-            el.innerHTML = `
-                <div class="corner-idx corner-tl">${displayVal}</div>
-                <div class="inner-oval">
-                    <div class="card-symbol">${displayVal}</div>
+            d.className = 'card';
+            d.innerHTML = `
+                <div class="card-inner ${bgClass}">
+                     <div class="corner-val c-tl">${sym}</div>
+                     <div class="card-oval">
+                         <div class="card-val-big">${sym}</div>
+                     </div>
+                     <div class="corner-val c-br">${sym}</div>
                 </div>
-                <div class="corner-idx corner-br">${displayVal}</div>
             `;
-            return el;
+            return d;
         }
 
     </script>
