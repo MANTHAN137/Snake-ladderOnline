@@ -3,23 +3,33 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UNO Online</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
 
         :root {
-            --red: #ff5252;
-            --blue: #448aff;
-            --green: #69f0ae;
-            --yellow: #ffd740;
+            --red: #ff5555;
+            --blue: #55aaff;
+            --green: #55ff55;
+            --yellow: #ffaa00;
             --black: #2d3436;
             --bg: #1e272e;
+            --card-width: 100px;
+            --card-height: 150px;
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --card-width: 70px;
+                --card-height: 105px;
+            }
         }
 
         body {
             font-family: 'Fredoka One', cursive;
             background-color: var(--bg);
+            background-image: radial-gradient(circle at center, #2f3640 0%, #1e272e 100%);
             color: white;
             margin: 0;
             display: flex;
@@ -27,6 +37,7 @@
             align-items: center;
             height: 100vh;
             overflow: hidden;
+            user-select: none;
         }
 
         /* --- Screens --- */
@@ -37,193 +48,328 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
 
-        .active-screen {
+        .screen.active-screen {
             display: flex;
+            opacity: 1;
         }
 
         /* --- Login/Lobby --- */
         .input-group {
-            margin: 10px;
+            margin: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+            width: 100%;
+            max-width: 300px;
         }
 
         input {
-            padding: 10px 20px;
+            width: 100%;
+            padding: 15px;
             font-size: 20px;
-            border-radius: 10px;
+            border-radius: 15px;
             border: none;
+            outline: none;
             text-align: center;
             font-family: inherit;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
         }
 
         button {
-            padding: 15px 40px;
-            font-size: 20px;
+            padding: 15px 30px;
+            font-size: 22px;
             font-family: inherit;
-            background: linear-gradient(45deg, #ff9f43, #ee5253);
+            background: linear-gradient(180deg, #ff9f43, #ee5253);
             border: none;
             border-radius: 50px;
             color: white;
             cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s;
-            margin: 5px;
+            box-shadow: 0 8px 0 #b33939, 0 15px 20px rgba(0, 0, 0, 0.4);
+            transition: all 0.1s;
+            position: relative;
+            top: 0;
+            min-width: 150px;
         }
 
-        button:hover {
-            transform: scale(1.05);
+        button:active {
+            top: 8px;
+            box-shadow: 0 0 0 #b33939, inset 0 5px 10px rgba(0, 0, 0, 0.4);
         }
 
         button.secondary {
-            background: linear-gradient(45deg, #448aff, #69f0ae);
+            background: linear-gradient(180deg, #448aff, #2980b9);
+            box-shadow: 0 8px 0 #1e3799, 0 15px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        button.secondary:active {
+            box-shadow: 0 0 0 #1e3799, inset 0 5px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        button:disabled {
+            background: #636e72;
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.5;
+            top: 8px;
         }
 
         /* --- Game Board --- */
         #gameInfo {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            text-align: left;
+            top: 10px;
+            left: 10px;
             z-index: 50;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 5px 15px;
+            border-radius: 20px;
         }
 
+        /* Opponents Strip */
         .opponents {
             display: flex;
             justify-content: center;
-            gap: 20px;
-            padding: 20px;
+            gap: 10px;
+            padding: 15px;
             position: absolute;
             top: 0;
             width: 100%;
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none;
+        }
+
+        .opponents::-webkit-scrollbar {
+            display: none;
         }
 
         .opponent {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px 20px;
-            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 15px;
+            border-radius: 12px;
             text-align: center;
-            min-width: 100px;
+            min-width: 80px;
             transition: all 0.3s;
+            border: 2px solid transparent;
+            position: relative;
         }
 
         .opponent.active-turn {
-            border: 3px solid #ffd740;
             background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.1);
+            border-color: #ffd740;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 215, 64, 0.5);
         }
 
+        /* --- Play Area --- */
         .center-table {
             position: absolute;
-            top: 45%;
+            top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             display: flex;
-            gap: 40px;
+            gap: 30px;
             align-items: center;
+            z-index: 10;
         }
 
         .card-pile {
-            width: 100px;
-            height: 150px;
-            background: #333;
-            border-radius: 10px;
+            width: var(--card-width);
+            height: var(--card-height);
+            background: #2d3436;
+            border-radius: 12px;
             border: 4px solid white;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 24px;
+            font-size: 18px;
             cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            transition: transform 0.1s;
+        }
+
+        .card-pile:active {
+            transform: scale(0.95);
         }
 
         .discard-pile {
-            background: white;
-            color: black;
-            font-size: 40px;
-            text-transform: uppercase;
             position: relative;
+            transform: rotate(5deg);
         }
 
         .active-color-indicator {
             position: absolute;
-            bottom: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 20px;
+            top: -10px;
+            right: -10px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
-            border: 2px solid white;
+            border: 3px solid white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 10;
         }
 
+        /* --- Card Styling --- */
         .card {
-            width: 90px;
-            height: 135px;
-            border-radius: 10px;
+            width: var(--card-width);
+            height: var(--card-height);
+            border-radius: 12px;
             background: white;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 30px;
-            font-weight: bold;
-            color: white;
-            text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5);
             position: relative;
-            box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.3);
+            box-shadow: -3px 3px 6px rgba(0, 0, 0, 0.4);
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.2s, margin-bottom 0.2s;
             user-select: none;
+            overflow: hidden;
+            color: black;
+        }
+
+        /* Inner White Oval */
+        .card::before {
+            content: '';
+            position: absolute;
+            width: 85%;
+            height: 90%;
+            background: #fff;
+            background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.95) 40%, rgba(255, 255, 255, 0) 70%);
+            opacity: 0.4;
+            transform: rotate(-30deg) scale(1.2);
+            z-index: 1;
+        }
+
+        /* Main White Ellipse */
+        .card::after {
+            content: '';
+            position: absolute;
+            width: 65%;
+            height: 55%;
+            background: white;
+            border-radius: 50%;
+            transform: rotate(-45deg);
+            z-index: 1;
+            box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card span.middle-val {
+            position: relative;
+            z-index: 5;
+            font-size: calc(var(--card-width) * 0.5);
+            font-weight: bold;
+            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
+            color: inherit;
+            line-height: 1;
+        }
+
+        .card .corner-val {
+            position: absolute;
+            font-size: calc(var(--card-width) * 0.18);
+            color: white;
+            font-weight: bold;
+            z-index: 5;
+            padding: 2px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .card .corner-top {
+            top: 4px;
+            left: 5px;
+        }
+
+        .card .corner-bottom {
+            bottom: 4px;
+            right: 5px;
+            transform: rotate(180deg);
         }
 
         .card:hover {
-            transform: translateY(-20px);
+            transform: translateY(-30px) scale(1.1);
             z-index: 100 !important;
         }
 
         .card.red {
             background: var(--red);
+            color: var(--red);
         }
 
         .card.blue {
             background: var(--blue);
+            color: var(--blue);
         }
 
         .card.green {
             background: var(--green);
+            color: var(--green);
         }
 
         .card.yellow {
             background: var(--yellow);
+            color: var(--yellow);
         }
 
         .card.black {
             background: var(--black);
-            background-image: linear-gradient(135deg, red, blue, green, yellow);
+            color: var(--black);
+            background-image: linear-gradient(135deg, #ff5555 15%, #ffaa00 35%, #55ff55 65%, #55aaff 85%);
         }
 
+        .card.black::after {
+            background: transparent;
+        }
+
+        .card.black span.middle-val {
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+
+        /* --- My Hand --- */
         .my-hand {
             position: absolute;
-            bottom: 20px;
+            bottom: 30px;
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
+            align-items: flex-end;
             width: 100%;
-            height: 150px;
+            height: calc(var(--card-height) + 50px);
             overflow-x: auto;
-            padding-bottom: 10px;
+            padding: 0 20px;
+            padding-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        .my-hand-container {
+            display: flex;
+            margin: 0 auto;
+            padding-left: 20px;
+            align-items: flex-end;
         }
 
         .my-hand .card {
-            margin-left: -40px;
+            margin-left: -20px;
+            flex-shrink: 0;
+            box-shadow: -2px -2px 10px rgba(0, 0, 0, 0.2);
         }
 
         .my-hand .card:first-child {
             margin-left: 0;
         }
 
-        /* --- Modals --- */
+
+        /* --- Color Picker Modal --- */
         .modal {
             display: none;
             position: fixed;
@@ -231,12 +377,23 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             z-index: 200;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             gap: 20px;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .modal-content {
@@ -245,141 +402,316 @@
             border-radius: 20px;
             text-align: center;
             border: 2px solid white;
+            max-width: 90%;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
         }
 
         .color-options {
-            display: flex;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
         }
 
         .color-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
             cursor: pointer;
-            border: 3px solid white;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            transition: transform 0.1s;
         }
 
+        .color-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* --- Buttons Area --- */
         .action-btns {
             position: absolute;
-            bottom: 200px;
+            bottom: calc(var(--card-height) + 60px);
             right: 20px;
             display: flex;
             flex-direction: column;
             gap: 10px;
+            z-index: 80;
         }
 
         .uno-btn {
-            background: linear-gradient(45deg, #ff5252, #ff9f43);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 0;
+            min-width: 0;
+            background: linear-gradient(135deg, #000, #444);
+            border: 4px solid #cc8e35;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            opacity: 0.5;
+            pointer-events: none;
+            transition: all 0.3s;
+        }
+
+        .uno-btn.active-uno {
+            opacity: 1;
+            transform: scale(1.1);
+            background: linear-gradient(135deg, #ff9f43, #ee5253);
+            border-color: white;
+            pointer-events: all;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(238, 82, 83, 0.7);
+            }
+
+            70% {
+                transform: scale(1.1);
+                box-shadow: 0 0 0 15px rgba(238, 82, 83, 0);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(238, 82, 83, 0);
+            }
         }
 
         .catch-btn {
             background: #d63031;
-            font-size: 16px;
+            font-size: 14px;
             padding: 10px 20px;
+            min-width: 0;
+            border-radius: 10px;
+            opacity: 0.5;
+            pointer-events: none;
         }
 
-        #statusText {
-            font-size: 24px;
-            margin-bottom: 10px;
+        .catch-btn.active-catch {
+            opacity: 1;
+            pointer-events: all;
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translate(1px, 1px) rotate(0deg);
+            }
+
+            20% {
+                transform: translate(-3px, 0px) rotate(1deg);
+            }
+
+            40% {
+                transform: translate(1px, -1px) rotate(1deg);
+            }
+
+            60% {
+                transform: translate(-3px, 1px) rotate(0deg);
+            }
+
+            80% {
+                transform: translate(-1px, -1px) rotate(1deg);
+            }
+
+            100% {
+                transform: translate(1px, -2px) rotate(-1deg);
+            }
+        }
+
+        /* --- Victory Screen --- */
+        #victoryScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #victoryTitle {
+            font-size: 60px;
             color: #ffd740;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 0 20px #ff9f43;
+            margin-bottom: 20px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0);
+            }
+
+            to {
+                transform: scale(1);
+            }
+        }
+
+        #winnerName {
+            font-size: 40px;
+            color: white;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        /* Status Text */
+        #statusText {
+            font-size: 5vw;
+            color: white;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            transition: color 0.3s;
+        }
+
+        @media (min-width: 600px) {
+            #statusText {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Screen 1: Login -->
+    <!-- LOGIN -->
     <div id="screen-login" class="screen active-screen">
-        <h1>UNO ONLINE</h1>
+        <h1 style="font-size: 50px; color: #ffd740; margin-bottom:0;">UNO</h1>
+        <h2 style="margin-top:0; color:white;">ONLINE</h2>
         <div class="input-group">
-            <input type="text" id="username" placeholder="Enter Nickname" maxlength="10">
-        </div>
-        <div class="input-group">
-            <button onclick="createGame()">Create New Game</button>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="roomCodeInput" placeholder="Room Code"
-                    style="width: 120px; text-transform:uppercase;">
-                <button class="secondary" onclick="joinGame()">Join</button>
+            <input type="text" id="username" placeholder="Nickname" maxlength="10">
+            <button onclick="createGame()">Create Game</button>
+            <div style="display:flex; gap:10px; width:100%;">
+                <input type="text" id="roomCodeInput" placeholder="CODE" style="text-transform:uppercase; flex:1;">
+                <button class="secondary" style="min-width: auto; flex:1;" onclick="joinGame()">Join</button>
             </div>
         </div>
     </div>
 
-    <!-- Screen 2: Lobby -->
+    <!-- LOBBY -->
     <div id="screen-lobby" class="screen">
         <h1>Lobby</h1>
-        <h2 id="lobbyRoomCode" style="color:#ffd740; letter-spacing: 2px;">CODE: ----</h2>
-        <div id="lobbyPlayerList" style="margin: 20px; font-size: 20px;"></div>
-        <div id="hostControls" style="display:none;">
-            <button onclick="startGame()">START GAME</button>
+        <div
+            style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; margin-bottom: 20px; position:relative;">
+            <div style="font-size: 14px; opacity: 0.7;">ROOM CODE</div>
+            <div id="lobbyRoomCode" style="font-size: 40px; color:#ffd740; letter-spacing: 5px; font-weight:bold;">----
+            </div>
+            <div style="font-size: 10px; opacity: 0.5; margin-top:5px;">(Click to Copy)</div>
         </div>
-        <p id="waitingMsg">Waiting for host to start...</p>
+
+        <div id="lobbyPlayerList"
+            style="display:flex; flex-direction:column; gap:10px; width: 100%; max-width: 300px; margin-bottom: 30px;">
+            <!-- PLayer items -->
+        </div>
+
+        <div id="hostControls" style="display:none;">
+            <button onclick="startGame()">START GAME!</button>
+        </div>
+        <p id="waitingMsg" style="opacity:0.6;">Waiting for host...</p>
     </div>
 
-    <!-- Screen 3: Game -->
+    <!-- GAME -->
     <div id="screen-game" class="screen">
         <div id="gameInfo">
-            <div>Room: <span id="gameRoomCode"></span></div>
-            <div id="actionLog" style="font-size: 14px; opacity: 0.8; margin-top: 5px;"></div>
+            Room: <span id="gameRoomCode" style="font-weight:bold; color:#ffd740; cursor:pointer;"
+                title="Click to copy"></span>
+            <div id="actionLog"></div>
         </div>
 
+        <!-- Opponents Scrollable Strip -->
         <div class="opponents" id="opponentsList"></div>
 
+        <!-- Status Text (Moved Up) -->
+        <div style="position: absolute; top: 25%; width: 100%; text-align: center; pointer-events: none; z-index: 20;">
+            <h2 id="statusText">Waiting...</h2>
+        </div>
+
+        <!-- Center Table -->
         <div class="center-table">
-            <div class="card-pile" onclick="drawCard()">DRAW</div>
+            <div class="card-pile" onclick="drawCard()">
+                <div style="text-align:center; transform: rotate(-5deg);">
+                    <div style="font-size:12px;">UNO</div>
+                    <div style="font-size:24px;">Draw</div>
+                </div>
+            </div>
+
             <div class="card discard-pile" id="discardPile">
-                <span></span>
+                <!-- Discard content inserted via JS -->
                 <div id="activeColorIndicator" class="active-color-indicator"></div>
             </div>
         </div>
 
-        <div style="position: absolute; top: 35%; width: 100%; text-align: center;">
-            <h2 id="statusText">Waiting...</h2>
-        </div>
-
+        <!-- Buttons -->
         <div class="action-btns">
-            <button class="uno-btn" onclick="sayUno()">UNO!</button>
-            <button class="catch-btn" onclick="catchUno()">CATCH UNO!</button>
+            <!-- Enabled via JS when hand <= 2 -->
+            <button id="btnUno" class="uno-btn" onclick="sayUno()">UNO</button>
+            <!-- Enabled via JS -->
+            <button id="btnCatch" class="catch-btn" onclick="catchUno()">CATCH!</button>
         </div>
 
-        <div class="my-hand" id="myHand"></div>
+        <!-- My Hand -->
+        <div class="my-hand">
+            <div class="my-hand-container" id="myHand">
+                <!-- Cards -->
+            </div>
+        </div>
     </div>
 
-    <!-- Modals -->
+    <!-- Color Picker Modal -->
     <div id="colorPicker" class="modal">
-        <h2>Choose Color</h2>
-        <div class="color-options">
-            <div class="color-btn" style="background:var(--red)" onclick="pickColor('red')"></div>
-            <div class="color-btn" style="background:var(--blue)" onclick="pickColor('blue')"></div>
-            <div class="color-btn" style="background:var(--green)" onclick="pickColor('green')"></div>
-            <div class="color-btn" style="background:var(--yellow)" onclick="pickColor('yellow')"></div>
+        <div class="modal-content">
+            <h2 style="margin:0 0 20px 0;">Pick a Color!</h2>
+            <div class="color-options">
+                <div class="color-btn" style="background:var(--red)" onclick="pickColor('red')"></div>
+                <div class="color-btn" style="background:var(--blue)" onclick="pickColor('blue')"></div>
+                <div class="color-btn" style="background:var(--green)" onclick="pickColor('green')"></div>
+                <div class="color-btn" style="background:var(--yellow)" onclick="pickColor('yellow')"></div>
+            </div>
         </div>
     </div>
 
+    <!-- Draw Decision Modal -->
+    <div id="drawDecisionModal" class="modal">
+        <div class="modal-content">
+            <h3>You drew a playable card!</h3>
+            <div style="display:flex; justify-content:center; margin: 20px 0;">
+                <div id="drawnCardDisplay" class="card"></div>
+            </div>
+            <div style="display:flex; gap:15px; justify-content: center;">
+                <button onclick="finishDraw(true)">Play It</button>
+                <button onclick="finishDraw(false)" class="secondary">Keep It</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Challenge Modal -->
     <div id="wildChallengeModal" class="modal">
         <div class="modal-content">
-            <h2>Wild Draw 4 Played!</h2>
-            <p id="challengeText">Player played a +4 on you.</p>
-            <p>Do you want to CHALLENGE?</p>
-            <p style="font-size: 14px; opacity: 0.8;">Rule: They can only play +4 if they have NO matching color.</p>
-            <div style="margin-top:20px; display:flex; gap:20px; justify-content:center;">
-                <button onclick="respondChallenge(true)" style="background:#ff5252">CHALLENGE</button>
+            <h2 style="color:#ff5555">Wild Draw 4!</h2>
+            <p id="challengeText" style="font-size: 18px;">Opponent played +4.</p>
+            <p style="font-size:14px; opacity:0.8; margin-bottom:20px;">
+                If they have the matching color in hand, they are bluffing!
+            </p>
+            <div style="display:flex; gap:15px; justify-content: center;">
+                <button onclick="respondChallenge(true)" style="background:#d63031">CHALLENGE</button>
                 <button onclick="respondChallenge(false)" class="secondary">ACCEPT (+4)</button>
             </div>
         </div>
     </div>
 
-    <div id="drawDecisionModal" class="modal">
-        <div class="modal-content">
-            <h2>You Drew:</h2>
-            <div id="drawnCardDisplay" class="card" style="margin: 0 auto; margin-bottom: 20px;"></div>
-            <p>Do you want to play it?</p>
-            <div style="display:flex; gap:20px; justify-content:center;">
-                <button onclick="finishDraw(true)">PLAY</button>
-                <button onclick="finishDraw(false)" class="secondary">PASS</button>
-            </div>
-        </div>
+    <!-- Victory Screen -->
+    <div id="victoryScreen">
+        <div id="victoryTitle">VICTORY!</div>
+        <div id="winnerName">Player Name</div>
+        <button onclick="location.reload()">Play Again</button>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
@@ -390,28 +722,57 @@
         let pendingCardIndex = null;
         let isDrawDecision = false;
 
-        // --- Navigation ---
+        // Navigation
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
             document.getElementById(id).classList.add('active-screen');
         }
 
-        // --- Socket Events ---
+        // Copy Code
+        function setupCopy(eId) {
+            const el = document.getElementById(eId);
+            el.style.cursor = "pointer";
+            el.onclick = () => {
+                const code = el.innerText.replace('CODE: ', '').trim();
+                navigator.clipboard.writeText(code).then(() => showToast("Copied!"))
+                    .catch(() => {
+                        const i = document.createElement('input');
+                        i.value = code;
+                        document.body.appendChild(i);
+                        i.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(i);
+                        showToast("Copied!");
+                    });
+            };
+        }
+        setupCopy('lobbyRoomCode');
+        setupCopy('gameRoomCode');
+
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.innerText = msg;
+            t.style.position = 'fixed'; t.style.bottom = '100px'; t.style.left = '50%'; t.style.transform = 'translateX(-50%)';
+            t.style.background = 'rgba(0,0,0,0.8)'; t.style.padding = '10px 20px'; t.style.borderRadius = '20px';
+            t.style.zIndex = '3000';
+            document.body.appendChild(t);
+            setTimeout(() => document.body.removeChild(t), 2000);
+        }
 
         socket.on('connect', () => { myId = socket.id; });
 
         socket.on('gameCreated', (data) => {
-            document.getElementById('lobbyRoomCode').innerText = `CODE: ${data.roomCode}`;
+            document.getElementById('lobbyRoomCode').innerText = data.roomCode;
             document.getElementById('hostControls').style.display = 'block';
             document.getElementById('waitingMsg').style.display = 'none';
             showScreen('screen-lobby');
         });
 
         socket.on('joinedGame', (data) => {
-            document.getElementById('lobbyRoomCode').innerText = `CODE: ${data.roomCode}`;
+            document.getElementById('lobbyRoomCode').innerText = data.roomCode;
             if (!data.isHost) {
                 document.getElementById('hostControls').style.display = 'none';
-                document.getElementById('waitingMsg').innerText = "Waiting for host to start...";
+                document.getElementById('waitingMsg').innerText = "Waiting for Host...";
                 document.getElementById('waitingMsg').style.display = 'block';
             }
             showScreen('screen-lobby');
@@ -419,7 +780,9 @@
 
         socket.on('playerList', (players) => {
             const div = document.getElementById('lobbyPlayerList');
-            div.innerHTML = players.map(p => `<div>${p.name}</div>`).join('');
+            div.innerHTML = players.map(p =>
+                `<div style="background:rgba(255,255,255,0.2); padding:10px; border-radius:10px;">${p.name}</div>`
+            ).join('');
         });
 
         socket.on('gameStarted', (data) => {
@@ -432,38 +795,35 @@
         socket.on('handUpdate', (hand) => {
             myHand = hand;
             renderHand();
+            updateUnoButton();
         });
 
         socket.on('challengePrompt', (data) => {
-            document.getElementById('challengeText').innerText = `${data.attackerName} played a +4 on you!`;
+            document.getElementById('challengeText').innerText = `${data.attackerName} played a +4 on you.`;
             document.getElementById('wildChallengeModal').style.display = 'flex';
         });
 
         socket.on('drawChoice', (data) => {
-            // Show modal to play or pass
             isDrawDecision = true;
-            const c = data.card;
-            // Render card in modal
-            const cardDiv = document.getElementById('drawnCardDisplay');
-            cardDiv.className = `card ${c.color}`;
-            cardDiv.innerHTML = `<span>${getDisplayValue(c.value)}</span>`;
+            renderCard(data.card, document.getElementById('drawnCardDisplay'));
             document.getElementById('drawDecisionModal').style.display = 'flex';
         });
 
         socket.on('actionLog', (data) => {
             const log = document.getElementById('actionLog');
             log.innerText = data.msg;
-            setTimeout(() => log.innerText = '', 3000);
+            log.style.opacity = 1;
+            setTimeout(() => log.style.opacity = 0, 4000);
         });
 
         socket.on('gameOver', (data) => {
-            alert(`${data.winner} WINS!`);
-            location.reload();
+            document.getElementById('winnerName').innerText = data.winner;
+            document.getElementById('victoryScreen').style.display = 'flex';
         });
 
         socket.on('errorMsg', (msg) => alert(msg));
 
-        // --- Actions ---
+        // --- Logic ---
 
         function createGame() {
             const name = document.getElementById('username').value;
@@ -478,73 +838,96 @@
             socket.emit('joinGame', { roomCode: code, paramName: name });
         }
 
-        function startGame() {
-            socket.emit('startGame');
-        }
-
-        function drawCard() {
-            socket.emit('drawCard');
-        }
-
-        function sayUno() {
-            socket.emit('sayUno');
-        }
-
-        function catchUno() {
-            socket.emit('catchUno');
-        }
+        function startGame() { socket.emit('startGame'); }
+        function drawCard() { socket.emit('drawCard'); }
+        function sayUno() { socket.emit('sayUno'); document.getElementById('btnUno').classList.remove('active-uno'); }
+        function catchUno() { socket.emit('catchUno'); }
 
         function renderHand() {
-            const div = document.getElementById('myHand');
-            div.innerHTML = '';
+            const container = document.getElementById('myHand');
+            container.innerHTML = '';
             myHand.forEach((card, index) => {
                 const el = document.createElement('div');
-                el.className = `card ${card.color}`;
+                renderCard(card, el);
                 el.onclick = () => tryPlayCard(index);
-                el.innerHTML = `<span>${getDisplayValue(card.value)}</span>`;
-                div.appendChild(el);
+                container.appendChild(el);
             });
+        }
+
+        function renderCard(card, element) {
+            if (!card) return;
+            element.className = `card ${card.color || 'black'}`;
+
+            let centerTxt = card.value;
+            if (centerTxt === 'skip') centerTxt = '⊘';
+            if (centerTxt === 'reverse') centerTxt = '⇄';
+            if (centerTxt === 'draw2') centerTxt = '+2';
+            if (centerTxt === 'wild') centerTxt = '';
+            if (centerTxt === 'wild_draw4') centerTxt = '+4';
+
+            let cornerTxt = centerTxt;
+
+            element.innerHTML = `
+                <span class="corner-val corner-top">${cornerTxt}</span>
+                <span class="middle-val">${centerTxt}</span>
+                <span class="corner-val corner-bottom">${cornerTxt}</span>
+            `;
         }
 
         function updateBoard(data) {
-            // Opponents
             const oppDiv = document.getElementById('opponentsList');
             oppDiv.innerHTML = '';
-            data.players.forEach(p => {
-                if (p.id === myId) return;
-                const d = document.createElement('div');
-                d.className = `opponent ${p.isTurn ? 'active-turn' : ''}`;
-                d.innerHTML = `<div>${p.name}</div><div style="font-size:24px">🂠 ${p.cardCount}</div>${p.saidUno ? '<div style="color:red; font-weight:bold;">UNO!</div>' : ''}`;
-                oppDiv.appendChild(d);
-            });
 
-            // Status
+            let vulnerable = false;
+
+            if (data.players) {
+                data.players.forEach(p => {
+                    if (p.id === myId) return;
+                    if (p.cardCount === 1 && !p.saidUno) vulnerable = true;
+
+                    const d = document.createElement('div');
+                    d.className = `opponent ${p.isTurn ? 'active-turn' : ''}`;
+                    d.innerHTML = `
+                        <div style="font-weight:bold; font-size:14px;">${p.name}</div>
+                        <div style="font-size:20px; margin-top:5px;">🂠 ${p.cardCount}</div>
+                        ${p.saidUno ? '<div style="color:#ffaa00; font-weight:bold; font-size:12px;">UNO!</div>' : ''}
+                    `;
+                    oppDiv.appendChild(d);
+                });
+            }
+
+            const btnCatch = document.getElementById('btnCatch');
+            if (vulnerable) btnCatch.classList.add('active-catch');
+            else btnCatch.classList.remove('active-catch');
+
             const myTurn = data.currentPlayer === myId;
-            document.getElementById('statusText').innerText = myTurn ? "YOUR TURN!" : "Waiting...";
-            document.getElementById('statusText').style.color = myTurn ? "#69f0ae" : "white";
+            const statusEl = document.getElementById('statusText');
+            if (data.players) statusEl.innerText = myTurn ? "YOUR TURN" : (data.players.find(p => p.isTurn)?.name + "'s Turn");
+            else statusEl.innerText = "Connecting...";
+            statusEl.style.color = myTurn ? "#55ff55" : "rgba(255,255,255,0.7)";
 
-            // Discard Pile
             const discard = document.getElementById('discardPile');
             const c = data.topCard;
-            let colorClass = c.color;
-            if (c.color === 'black' && data.activeColor) colorClass = data.activeColor; // Show chosen color
-            else if (c.color === 'black') colorClass = 'black';
 
-            discard.className = `card discard-pile ${colorClass}`;
-            discard.innerHTML = `<span>${getDisplayValue(c.value)}</span>`;
+            if (c) {
+                renderCard(c, discard);
+                let displayColor = c.color;
+                if (c.color === 'black' && data.activeColor) displayColor = data.activeColor;
+                discard.className = `card discard-pile ${displayColor}`;
 
-            // Active Color dot
-            const ac = document.getElementById('activeColorIndicator');
-            ac.style.background = data.activeColor || 'transparent';
+                const ac = document.getElementById('activeColorIndicator');
+                ac.style.background = (c.color === 'black' || c.value === 'wild') ? (data.activeColor || 'white') : 'transparent';
+                ac.style.boxShadow = (c.color === 'black') ? '0 0 10px white' : 'none';
+            }
         }
 
-        function getDisplayValue(val) {
-            if (val === 'skip') return '🚫';
-            if (val === 'reverse') return '⇄';
-            if (val === 'draw2') return '+2';
-            if (val === 'wild') return '🌈';
-            if (val === 'wild_draw4') return '+4';
-            return val;
+        function updateUnoButton() {
+            const btn = document.getElementById('btnUno');
+            if (myHand.length > 0 && myHand.length <= 2) {
+                btn.classList.add('active-uno');
+            } else {
+                btn.classList.remove('active-uno');
+            }
         }
 
         function tryPlayCard(index) {
@@ -559,7 +942,6 @@
 
         function pickColor(color) {
             document.getElementById('colorPicker').style.display = 'none';
-
             if (isDrawDecision) {
                 socket.emit('finishDrawTurn', { play: true, chosenColor: color });
                 document.getElementById('drawDecisionModal').style.display = 'none';
@@ -577,19 +959,10 @@
 
         function finishDraw(play) {
             if (play) {
-                // Check if it's wild, we need color
-                // We don't have the card object easily here unless we saved it from event
-                // But wait, if we click Play, we need to pick color if Wild.
-                // Let's assume we can check the DOM element? 
-                // Or we saved it? We rendered it with class.
                 const cardDiv = document.getElementById('drawnCardDisplay');
-                if (cardDiv.classList.contains('black')) {
-                    // It's wild
-                    // Close this modal, open color picker
-                    // Set flag so color picker knows to emit 'finishDrawTurn'
-                    // isDrawDecision already set to true
+                if (cardDiv.className.includes('black')) {
                     document.getElementById('colorPicker').style.display = 'flex';
-                    return; // Don't emit yet
+                    return;
                 }
                 socket.emit('finishDrawTurn', { play: true });
             } else {
