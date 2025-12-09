@@ -1,7 +1,7 @@
 {
-    "name": "snake-ladders-multiplayer",
+    "name": "uno-online",
     "version": "1.0.0",
-    "description": "Multiplayer Snake and Ladders with Socket.io",
+    "description": "Multiplayer UNO Game",
     "main": "server.js",
     "scripts": {
         "start": "node server.js"
