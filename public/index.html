@@ -3,14 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
     <title>UNO Online</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap"
         rel="stylesheet">
     <style>
         :root {
-            /* Palette: Premium Blue Theme & Gradients */
+            /* Palette */
             --bg-gradient-start: #003366;
             --bg-gradient-end: #001a33;
             --surface: rgba(0, 0, 0, 0.4);
@@ -35,16 +36,16 @@
             background: radial-gradient(circle at center, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
             color: white;
             font-family: 'Nunito', sans-serif;
-            overflow: hidden;
-            height: 100vh;
+            min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
         /* --- Screens --- */
         .screen {
             display: none;
-            flex: 1;
             flex-direction: column;
             align-items: center;
             justify-content: center;
@@ -52,6 +53,8 @@
             height: 100%;
             opacity: 0;
             transition: opacity 0.3s;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .active-screen {
@@ -59,9 +62,12 @@
             opacity: 1;
         }
 
+        #screen-game {
+            overflow: hidden;
+        }
+
         h1,
-        h2,
-        h3 {
+        h2 {
             font-family: 'Fredoka One', cursive;
             margin: 5px 0;
             text-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
@@ -102,6 +108,7 @@
             min-width: 160px;
             text-transform: uppercase;
             letter-spacing: 1px;
+            touch-action: manipulation;
         }
 
         button:active {
@@ -167,7 +174,6 @@
         #game-layout {
             display: grid;
             grid-template-rows: 120px 1fr 220px;
-            /* Top (Opponents), Center (Table), Bottom (Hand) */
             width: 100%;
             height: 100%;
             position: relative;
@@ -177,7 +183,6 @@
         .top-bar {
             display: flex;
             align-items: center;
-            /* Vertically Center */
             justify-content: center;
             padding-top: 10px;
             gap: 40px;
@@ -191,7 +196,6 @@
             transition: 0.3s;
             position: relative;
             margin-top: 10px;
-            /* Spacing from top edge */
         }
 
         .opponent.active-turn {
@@ -214,7 +218,6 @@
             border: 3px solid rgba(255, 255, 255, 0.5);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             position: relative;
-            /* Anchor for badge */
         }
 
         .opponent.active-turn .opponent-avatar {
@@ -222,7 +225,6 @@
             box-shadow: 0 0 15px #ffd740;
         }
 
-        /* Badge Adjusted: Top Right, No Overlap */
         .opponent-card-count {
             position: absolute;
             top: -5px;
@@ -234,7 +236,6 @@
             padding: 3px 7px;
             border-radius: 10px;
             border: 2px solid #001a33;
-            /* Dark border to separate from circle */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             min-width: 20px;
             text-align: center;
@@ -256,10 +257,8 @@
             justify-content: center;
             position: relative;
             gap: 20px;
-            /* Space between Status and Cards */
         }
 
-        /* Status Pill */
         .status-pill {
             background: rgba(0, 0, 0, 0.6);
             padding: 10px 30px;
@@ -275,10 +274,10 @@
         }
 
         #statusText {
+            margin: 0;
             font-family: 'Fredoka One';
             font-size: 24px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-            margin: 0;
         }
 
         .active-color-badge {
@@ -290,18 +289,14 @@
             border-radius: 12px;
             text-transform: uppercase;
             display: none;
-            /* JS Toggles */
         }
 
-        /* Card Board */
         .card-board {
             display: flex;
             gap: 40px;
-            /* Space between Draw and Discard */
             align-items: center;
         }
 
-        /* Piles */
         .pile-wrapper {
             width: var(--card-w-desktop);
             height: var(--card-h-desktop);
@@ -333,26 +328,22 @@
             transform: rotate(-25deg);
         }
 
-        /* Discard */
         .discard-pile {
             width: 100%;
             height: 100%;
             transform: rotate(0deg);
-            /* Reset tilt for alignment */
         }
 
-        /* 3. Bottom Hand & Actions */
+        /* 3. Bottom & Actions */
         .bottom-section {
             position: relative;
             width: 100%;
             height: 100%;
         }
 
-        /* Action Buttons: Anchored Bottom Right */
         .action-anchor {
             position: absolute;
             bottom: 180px;
-            /* Just above hand */
             right: 40px;
             display: flex;
             flex-direction: column;
@@ -361,6 +352,7 @@
             align-items: center;
         }
 
+        /* Updated Button Styling for Tangibility */
         .btn-round {
             width: 80px;
             height: 80px;
@@ -378,16 +370,49 @@
             opacity: 0.5;
             filter: grayscale(100%);
             transform: scale(0.9);
-            pointer-events: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            pointer-events: auto;
+            touch-action: manipulation;
         }
 
         .btn-round.btn-action-needed {
             opacity: 1;
             filter: grayscale(0%);
             transform: scale(1.05);
-            pointer-events: auto;
             border-color: white;
             animation: pulse-btn 1.5s infinite;
+        }
+
+        .btn-round:active {
+            transform: scale(0.85);
+        }
+
+        .shake-animation {
+            animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+        }
+
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0) scale(0.9);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0) scale(0.9);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0) scale(0.9);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0) scale(0.9);
+            }
         }
 
         #btnUno.btn-action-needed {
@@ -415,8 +440,6 @@
             }
         }
 
-
-        /* Player Hand: Centered */
         .hand-container {
             position: absolute;
             bottom: 0;
@@ -425,7 +448,6 @@
             padding-bottom: 20px;
             display: flex;
             justify-content: center;
-            /* Center horizontally */
         }
 
         .hand-scroll {
@@ -434,7 +456,6 @@
             padding: 20px 40px;
             gap: 10px;
             max-width: 100%;
-            /* Hide scrollbar */
             scrollbar-width: none;
         }
 
@@ -442,7 +463,7 @@
             display: none;
         }
 
-        /* --- CARD STYLING --- */
+        /* --- CARD --- */
         .card {
             width: var(--card-w-desktop);
             height: var(--card-h-desktop);
@@ -587,11 +608,6 @@
         }
 
         /* --- MENUS --- */
-        .color-highlight {
-            color: var(--yellow);
-            text-shadow: 0 0 10px var(--yellow);
-        }
-
         .screen-content {
             background: rgba(0, 0, 0, 0.6);
             padding: 40px;
@@ -599,6 +615,13 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             text-align: center;
+            /* Ensure content fits on mobile scroll */
+            margin: 20px;
+        }
+
+        .color-highlight {
+            color: var(--yellow);
+            text-shadow: 0 0 10px var(--yellow);
         }
     </style>
 </head>
@@ -641,18 +664,15 @@
     <!-- GAME -->
     <div id="screen-game" class="screen">
         <div id="game-layout">
-
             <!-- 1. Opponents (Top) -->
             <div class="top-bar" id="opponentsBar"></div>
 
             <!-- 2. Center: Status Pill + Board -->
             <div class="center-section">
-                <!-- Status Pill -->
                 <div class="status-pill">
                     <div id="statusText">Connecting...</div>
                     <div id="activeColorBadge" class="active-color-badge"></div>
                 </div>
-
                 <!-- Deck + Discard -->
                 <div class="card-board">
                     <div class="pile-wrapper" onclick="drawCard()">
@@ -673,17 +693,15 @@
                     <div id="btnUno" class="btn-round" onclick="sayUno()">UNO!</div>
                     <div id="btnCatch" class="btn-round" onclick="catchUno()">CATCH</div>
                 </div>
-
                 <!-- Hand: Centered -->
                 <div class="hand-container">
                     <div class="hand-scroll" id="myHand"></div>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- MODALS (Color, Challenge, Draw, Victory) -->
+    <!-- MODALS -->
     <div id="modalColor" class="screen" style="position:fixed; background:rgba(0,0,0,0.85); z-index:2000;">
         <h2 style="margin-bottom:30px;">Choose a Color</h2>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
@@ -764,8 +782,31 @@
         function joinGame() { const n = document.getElementById('username').value; const c = document.getElementById('roomCode').value; if (n && c) socket.emit('joinGame', { paramName: n, roomCode: c }); }
         function startGame() { socket.emit('startGame'); }
         function drawCard() { socket.emit('drawCard'); }
-        function sayUno() { socket.emit('sayUno'); document.getElementById('btnUno').classList.remove('btn-action-needed'); }
-        function catchUno() { socket.emit('catchUno'); }
+
+        function sayUno() {
+            const btn = document.getElementById('btnUno');
+            if (!btn.classList.contains('btn-action-needed')) {
+                triggerShake(btn);
+                return;
+            }
+            socket.emit('sayUno');
+            btn.classList.remove('btn-action-needed');
+        }
+        function catchUno() {
+            const btn = document.getElementById('btnCatch');
+            if (!btn.classList.contains('btn-action-needed')) {
+                triggerShake(btn);
+                return;
+            }
+            socket.emit('catchUno');
+        }
+
+        function triggerShake(el) {
+            el.classList.remove('shake-animation');
+            void el.offsetWidth; // trigger reflow
+            el.classList.add('shake-animation');
+            // Toast feedback? Maybe annoying if spam clicking.
+        }
 
         let tempCardIdx = null; let isDrawPlay = false;
         function clickCard(idx) {
