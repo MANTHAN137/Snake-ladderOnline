@@ -21,8 +21,8 @@
 
         @media (max-width: 600px) {
             :root {
-                --card-width: 70px;
-                --card-height: 105px;
+                --card-width: 80px;
+                --card-height: 120px;
             }
         }
 
@@ -140,7 +140,7 @@
         .opponents {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 15px;
             padding: 15px;
             position: absolute;
             top: 0;
@@ -175,11 +175,11 @@
         /* --- Play Area --- */
         .center-table {
             position: absolute;
-            top: 50%;
+            top: 55%;
             left: 50%;
             transform: translate(-50%, -50%);
             display: flex;
-            gap: 30px;
+            gap: 40px;
             align-items: center;
             z-index: 10;
         }
@@ -232,7 +232,7 @@
             position: relative;
             box-shadow: -3px 3px 6px rgba(0, 0, 0, 0.4);
             cursor: pointer;
-            transition: transform 0.2s, margin-bottom 0.2s;
+            transition: transform 0.2s;
             user-select: none;
             overflow: hidden;
             color: black;
@@ -286,17 +286,17 @@
 
         .card .corner-top {
             top: 4px;
-            left: 5px;
+            left: 6px;
         }
 
         .card .corner-bottom {
             bottom: 4px;
-            right: 5px;
+            right: 6px;
             transform: rotate(180deg);
         }
 
         .card:hover {
-            transform: translateY(-30px) scale(1.1);
+            transform: translateY(-40px) scale(1.1);
             z-index: 100 !important;
         }
 
@@ -339,7 +339,7 @@
         /* --- My Hand --- */
         .my-hand {
             position: absolute;
-            bottom: 30px;
+            bottom: 20px;
             display: flex;
             justify-content: flex-start;
             align-items: flex-end;
@@ -349,6 +349,18 @@
             padding: 0 20px;
             padding-bottom: 20px;
             box-sizing: border-box;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+            scrollbar-width: thin;
+        }
+
+        /* Custom Scrollbar */
+        .my-hand::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .my-hand::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
         }
 
         .my-hand-container {
@@ -356,80 +368,25 @@
             margin: 0 auto;
             padding-left: 20px;
             align-items: flex-end;
+            gap: 15px;
+            /* SPACE THEM OUT! */
         }
 
         .my-hand .card {
-            margin-left: -20px;
-            flex-shrink: 0;
-            box-shadow: -2px -2px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .my-hand .card:first-child {
             margin-left: 0;
+            /* NO OVERLAP */
+            flex-shrink: 0;
+            box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s;
         }
 
-
-        /* --- Color Picker Modal --- */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 200;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        .modal-content {
-            background: #2d3436;
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            border: 2px solid white;
-            max-width: 90%;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
-        }
-
-        .color-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .color-btn {
-            width: 80px;
-            height: 80px;
-            border-radius: 15px;
-            cursor: pointer;
-            border: 3px solid rgba(255, 255, 255, 0.5);
-            transition: transform 0.1s;
-        }
-
-        .color-btn:active {
-            transform: scale(0.9);
-        }
+        /* ... */
 
         /* --- Buttons Area --- */
         .action-btns {
             position: absolute;
-            bottom: calc(var(--card-height) + 60px);
+            bottom: calc(var(--card-height) + 80px);
+            /* Move buttons up slightly */
             right: 20px;
             display: flex;
             flex-direction: column;
@@ -630,7 +587,7 @@
         <div class="opponents" id="opponentsList"></div>
 
         <!-- Status Text (Moved Up) -->
-        <div style="position: absolute; top: 25%; width: 100%; text-align: center; pointer-events: none; z-index: 20;">
+        <div style="position: absolute; top: 15%; width: 100%; text-align: center; pointer-events: none; z-index: 20;">
             <h2 id="statusText">Waiting...</h2>
         </div>
 
