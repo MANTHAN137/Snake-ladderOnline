@@ -253,6 +253,8 @@ io.on('connection', (socket) => {
 
             let victim = game.players[nextPIdx];
             io.to(victim.id).emit('challengePrompt', { attackerName: player.name });
+            // Fix: Update attacker's hand immediately so they don't see the played card
+            io.to(player.id).emit('handUpdate', player.hand);
             io.to(currentRoom).emit('gameState', getGameState(game));
             return;
         }
