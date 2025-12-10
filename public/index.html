@@ -753,9 +753,14 @@
 
         // UI Helpers
         function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => { if (!s.id.startsWith('modal')) s.classList.remove('active-screen'); });
-            if (!id.startsWith('modal')) hideModals();
-            document.getElementById(id).classList.add('active-screen');
+            if (id.startsWith('modal')) {
+                // Overlay: Only show the modal, but DO NOT hide the underlying screen (game/lobby)
+                document.getElementById(id).classList.add('active-screen');
+            } else {
+                // Base Screen Switch: Hide EVERYTHING (including open modals) and show new base screen
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+                document.getElementById(id).classList.add('active-screen');
+            }
         }
         function hideModals() {
             ['modalColor', 'modalChallenge', 'modalDraw', 'modalVictory'].forEach(id => document.getElementById(id).classList.remove('active-screen'));
